@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -14,7 +15,8 @@ class UserController extends Controller
      */
     public function index()
     {
-        //
+        $users = User::latest()->paginate(10);
+        return $users;
     }
 
     /**
@@ -25,7 +27,21 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // return $request;
+        $this->validate($request,[
+            'name' => 'required|string',
+            'email' => 'required|string|email|unique:users',
+            'password' => 'required|min:6',
+            'type' => 'required'
+        ]);
+        return User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'bio' => $request->bio,
+            'type' => $request->type,
+            'password' => bcrypt($request->password)
+        ]);
+        return 'ok';
     }
 
     /**

@@ -17,21 +17,23 @@
                     <tr>
                       <th>ID</th>
                       <th>User</th>
-                      <th>Date</th>
-                      <th>Status</th>
+                      <th>Email</th>
+                      <th>Type</th>
+                      <th>Registered At</th>
                       <th>Reason</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td>183</td>
-                      <td>John Doe</td>
-                      <td>11-7-2014</td>
-                      <td><span class="tag tag-success">Approved</span></td>
+                    <tr v-for="user in users" :key="user.id">
+                      <td>{{user.id}}</td>
+                      <td>{{user.name}}</td>
+                      <td>{{user.email}}</td>
+                      <td>{{user.type | capitalize}}</td>
+                      <td>{{user.created_at | my_date}}</td>
                       <td>
                           <a href=""><i class="fas fa-edit"></i></a>
                           |
-                          <a href=""><i class="fas fa-trash"></i></a>
+                          <a href=""><i class="fas fa-trash masum"></i></a>
                       </td>
                     </tr>
                   </tbody>
@@ -100,6 +102,7 @@
     export default {
         data(){
           return {
+            users : {},
             form : new Form({
               name : '',
               email : '',
@@ -111,11 +114,30 @@
           }
         },
         methods : {
+          getUsers(){
+            axios.get('api/user')
+            .then(res => {
+              console.log(res.data.data);
+              this.users = res.data.data;
+            });
+          },
           createUser(){
-            this.form.post('api/user');
+            this.$Progress.start()
+            this.form.post('api/user')
+            .then(res => {
+              this.form.reset();
+              this.$Progress.finish()
+              this.getUsers();
+              Toast.fire({
+                icon: 'success',
+                title: 'User created successfully'
+              })
+              $('#addNewUser').modal('hide');
+            });
           }
         },
         mounted() {
+          this.getUsers();
             console.log('Component mounted.')
         }
     }

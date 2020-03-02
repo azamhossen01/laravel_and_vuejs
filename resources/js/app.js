@@ -8,6 +8,50 @@ require('./bootstrap');
 
 window.Vue = require('vue');
 
+// sweet alert
+import Swal from 'sweetalert2'
+// const Swal = require('sweetalert2')
+window.Swal = Swal
+const Toast = Swal.mixin({
+  toast: true,
+  position: 'top-end',
+  showConfirmButton: false,
+  timer: 3000,
+  timerProgressBar: true,
+  onOpen: (toast) => {
+    toast.addEventListener('mouseenter', Swal.stopTimer)
+    toast.addEventListener('mouseleave', Swal.resumeTimer)
+  }
+})
+window.Toast = Toast
+
+// progress bar
+import VueProgressBar from 'vue-progressbar'
+
+Vue.use(VueProgressBar, {
+  color: 'rgb(143, 255, 199)',
+  failedColor: 'red',
+  height: '10px'
+})
+
+
+// moment js
+import moment from 'moment'
+Vue.filter('my_date', function (value) {
+    
+    return moment(value).format("MMM Do YY"); 
+  })
+
+//   filter text 
+Vue.filter('capitalize', function (value) {
+    if (!value) return ''
+    value = value.toString()
+    return value.charAt(0).toUpperCase() + value.slice(1)
+  })
+
+
+
+// vfor for submit form data and display error
 import { Form, HasError, AlertError } from 'vform'
 window.Form = Form;
 Vue.component(HasError.name, HasError)
