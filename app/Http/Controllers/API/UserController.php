@@ -102,4 +102,22 @@ class UserController extends Controller
         $user->delete();
         return response()->json(['message'=>"User $name deleted successfully"]);
     }
+
+    public function profile(){
+        return auth('api')->user();
+    }
+
+    public function update_profile(Request $request){
+        $exploded = explode(',',$request->photo);
+        if(strpos($exploded[0],'jpeg')){
+            $extension = 'jpg';
+        }else{
+            $extension = 'png';
+        }
+        $decoded = base64_decode($exploded[1]);
+        $file_name = time().'.'.$extension;
+        $file_path = public_path('img/').$file_name;
+        file_put_contents($file_path,$decoded);
+        return 'ok';
+    }
 }

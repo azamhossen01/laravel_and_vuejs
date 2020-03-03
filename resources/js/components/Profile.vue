@@ -50,13 +50,13 @@
             </div>
             </div>
         </div>
+
         <div class="row">
-            <div class="col-md-12">
-                <div class="card">
+            <div class="col-lg-12">
+              <div class="card">
               <div class="card-header p-2">
                 <ul class="nav nav-pills">
                   <li class="nav-item"><a class="nav-link active" href="#activity" data-toggle="tab">Activity</a></li>
-                  
                   <li class="nav-item"><a class="nav-link" href="#settings" data-toggle="tab">Settings</a></li>
                 </ul>
               </div><!-- /.card-header -->
@@ -129,7 +129,7 @@
                     <!-- Post -->
                     <div class="post">
                       <div class="user-block">
-                        <img class="img-circle img-bordered-sm" src="../../dist/img/user6-128x128.jpg" alt="User Image">
+                        <img class="img-circle img-bordered-sm" src="" alt="User Image">
                         <span class="username">
                           <a href="#">Adam Jones</a>
                           <a href="#" class="float-right btn-tool"><i class="fas fa-times"></i></a>
@@ -139,19 +139,19 @@
                       <!-- /.user-block -->
                       <div class="row mb-3">
                         <div class="col-sm-6">
-                          <img class="img-fluid" src="../../dist/img/photo1.png" alt="Photo">
+                          <img class="img-fluid" src="" alt="Photo">
                         </div>
                         <!-- /.col -->
                         <div class="col-sm-6">
                           <div class="row">
                             <div class="col-sm-6">
-                              <img class="img-fluid mb-3" src="../../dist/img/photo2.png" alt="Photo">
-                              <img class="img-fluid" src="../../dist/img/photo3.jpg" alt="Photo">
+                              <img class="img-fluid mb-3" src="" alt="Photo">
+                              <img class="img-fluid" src="" alt="Photo">
                             </div>
                             <!-- /.col -->
                             <div class="col-sm-6">
-                              <img class="img-fluid mb-3" src="../../dist/img/photo4.jpg" alt="Photo">
-                              <img class="img-fluid" src="../../dist/img/photo1.png" alt="Photo">
+                              <img class="img-fluid mb-3" src="" alt="Photo">
+                              <img class="img-fluid" src="" alt="Photo">
                             </div>
                             <!-- /.col -->
                           </div>
@@ -176,57 +176,45 @@
                     <!-- /.post -->
                   </div>
                   <!-- /.tab-pane -->
-                 
-                  <!-- /.tab-pane -->
+               
 
                   <div class="tab-pane" id="settings">
-                    <form class="form-horizontal">
-                      <div class="form-group">
-                        <label for="inputName" class="col-sm-2 control-label">Name</label>
-
+                    <form @submit.prevent="updateUser()" class="form-horizontal">
+                      <div class="form-group row">
+                        <label for="inputName" class="col-sm-2 col-form-label">Name</label>
                         <div class="col-sm-10">
-                          <input type="email" class="form-control" id="inputName" placeholder="Name">
+                          <input type="text" v-model="form.name" :class="{ 'is-invalid': form.errors.has('name') }" class="form-control" id="inputName" placeholder="Name">
+                          <has-error :form="form" field="name"></has-error>
                         </div>
                       </div>
-                      <div class="form-group">
-                        <label for="inputEmail" class="col-sm-2 control-label">Email</label>
-
+                      <div class="form-group row">
+                        <label for="inputEmail" class="col-sm-2 col-form-label">Email</label>
                         <div class="col-sm-10">
-                          <input type="email" class="form-control" id="inputEmail" placeholder="Email">
+                          <input type="email" :class="{ 'is-invalid': form.errors.has('email') }" v-model="form.email" class="form-control" id="inputEmail" placeholder="Email">
+                          <has-error :form="form" field="email"></has-error>
                         </div>
                       </div>
-                      <div class="form-group">
-                        <label for="inputName2" class="col-sm-2 control-label">Name</label>
-
+                      <div class="form-group row">
+                        <label for="inputExperience" class="col-sm-2 col-form-label">Experience</label>
                         <div class="col-sm-10">
-                          <input type="text" class="form-control" id="inputName2" placeholder="Name">
+                          <textarea class="form-control" :class="{ 'is-invalid': form.errors.has('bio') }" v-model="form.bio" id="inputExperience" placeholder="Experience"></textarea>
+                          <has-error :form="form" field="bio"></has-error>
                         </div>
                       </div>
-                      <div class="form-group">
-                        <label for="inputExperience" class="col-sm-2 control-label">Experience</label>
-
+                      <div class="form-group row">
+                        <label for="photo" class="col-sm-2 col-form-label">Profile Photo</label>
                         <div class="col-sm-10">
-                          <textarea class="form-control" id="inputExperience" placeholder="Experience"></textarea>
+                          <input type="file" @change="get_image" class="form-control" id="photo">
                         </div>
                       </div>
-                      <div class="form-group">
-                        <label for="inputSkills" class="col-sm-2 control-label">Skills</label>
-
+                      <div class="form-group row">
+                        <label for="password" class="col-sm-2 col-form-label">Passport(Leave empty if not change)</label>
                         <div class="col-sm-10">
-                          <input type="text" class="form-control" id="inputSkills" placeholder="Skills">
+                          <input type="text" v-model="form.password" class="form-control" id="password" placeholder="Passport">
                         </div>
                       </div>
-                      <div class="form-group">
-                        <div class="col-sm-offset-2 col-sm-10">
-                          <div class="checkbox">
-                            <label>
-                              <input type="checkbox"> I agree to the <a href="#">terms and conditions</a>
-                            </label>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <div class="col-sm-offset-2 col-sm-10">
+                      <div class="form-group row">
+                        <div class="offset-sm-2 col-sm-10">
                           <button type="submit" class="btn btn-danger">Submit</button>
                         </div>
                       </div>
@@ -239,13 +227,62 @@
             </div>
             </div>
         </div>
+        
     </div>
 </template>
 
 <script>
     export default {
+      data(){
+        return {
+          form : new Form({
+              id : '',
+              name : '',
+              email : '',
+              bio : '',
+              password : '',
+              photo : '',
+              type : ''
+            })
+        }
+      },
         mounted() {
             console.log('Component mounted.')
+            
+        },
+        created(){
+          axios.get('api/profile')
+            .then(res => {
+              console.log(res.data);
+              this.form.fill(res.data);
+            });
+        },
+        methods : {
+          get_image(e){
+            const fileReader = new FileReader();
+            fileReader.readAsDataURL(e.target.files[0]);
+            console.log(e.target.files[0].size);
+            if(e.target.files[0].size > 2000){
+              Swal.fire({
+                type : 'error',
+                title : 'Opss....',
+                text : 'Too large image',
+                icon : 'warning'
+              })
+              this.form.reset();
+              }else{
+              fileReader.onload = (e) => {
+              this.form.photo = e.target.result;
+              }
+            }
+            
+          },
+          updateUser(){
+            axios.put('api/profile',this.form)
+            .then(res=>{
+              console.log(res.data);
+            });
+          }
         }
     }
 </script>
