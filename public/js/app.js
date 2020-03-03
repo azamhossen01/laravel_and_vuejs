@@ -2127,8 +2127,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
+      editmode: true,
       users: {},
+      warning: 'btn btn-warning',
+      info: 'btn btn-info',
       form: new Form({
+        id: '',
         name: '',
         email: '',
         bio: '',
@@ -2139,6 +2143,9 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   methods: {
+    get_btn_class: function get_btn_class() {
+      return this.editmode ? this.warning : this.info;
+    },
     getUsers: function getUsers() {
       var _this = this;
 
@@ -2147,6 +2154,12 @@ __webpack_require__.r(__webpack_exports__);
         _this.users = res.data.data;
       });
     },
+    addNew: function addNew() {
+      this.form.reset();
+      this.editmode = false;
+      $('#title').text('Add User');
+      $('#addNewUser').modal('show');
+    },
     createUser: function createUser() {
       var _this2 = this;
 
@@ -2154,21 +2167,69 @@ __webpack_require__.r(__webpack_exports__);
       this.form.post('api/user').then(function (res) {
         _this2.form.reset();
 
-        _this2.$Progress.finish();
+        _this2.$Progress.finish(); // this.getUsers();
 
-        _this2.getUsers();
 
+        Fire.$emit('AfterCreated');
         Toast.fire({
           icon: 'success',
           title: 'User created successfully'
         });
         $('#addNewUser').modal('hide');
+      })["catch"](function (err) {
+        console.log(err);
       });
+    },
+    updateUser: function updateUser() {
+      this.$Progress.start();
+      this.form.put('api/user/' + this.form.id).then(function () {
+        Fire.$emit('AfterCreated');
+        Toast.fire({
+          icon: 'success',
+          title: 'User updated successfully'
+        });
+        $('#addNewUser').modal('hide');
+      });
+    },
+    delete_user: function delete_user(user_id) {
+      Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+      }).then(function (result) {
+        if (result.value) {
+          axios["delete"]('api/user/' + user_id).then(function (res) {
+            console.log(res.data.message); // this.getUsers();
+
+            Fire.$emit('AfterCreated');
+            Swal.fire('Deleted!', res.data.message, 'success');
+          });
+        }
+      });
+    },
+    edit_user: function edit_user(user) {
+      // alert(user_id);
+      this.form.reset();
+      this.editmode = true;
+      $('#title').text('Edit User');
+      this.form.fill(user);
+      $('#addNewUser').modal('show');
     }
   },
   mounted: function mounted() {
     this.getUsers();
     console.log('Component mounted.');
+  },
+  created: function created() {
+    var _this3 = this;
+
+    Fire.$on('AfterCreated', function () {
+      _this3.getUsers();
+    });
   }
 });
 
@@ -59381,11 +59442,28 @@ var render = function() {
     _c("div", { staticClass: "row mt-5" }, [
       _c("div", { staticClass: "col-12" }, [
         _c("div", { staticClass: "card" }, [
-          _vm._m(0),
+          _c("div", { staticClass: "card-header" }, [
+            _c("h3", { staticClass: "card-title" }, [_vm._v("All Users")]),
+            _vm._v(" "),
+            _c("div", { staticClass: "card-tools" }, [
+              _c(
+                "button",
+                {
+                  staticClass: "btn btn-success",
+                  attrs: { type: "button" },
+                  on: { click: _vm.addNew }
+                },
+                [
+                  _vm._v("Add New "),
+                  _c("i", { staticClass: "fas fa-user-plus" })
+                ]
+              )
+            ])
+          ]),
           _vm._v(" "),
           _c("div", { staticClass: "card-body table-responsive p-0" }, [
             _c("table", { staticClass: "table table-hover" }, [
-              _vm._m(1),
+              _vm._m(0),
               _vm._v(" "),
               _c(
                 "tbody",
@@ -59403,7 +59481,37 @@ var render = function() {
                       _vm._v(_vm._s(_vm._f("my_date")(user.created_at)))
                     ]),
                     _vm._v(" "),
-                    _vm._m(2, true)
+                    _c("td", [
+                      _c(
+                        "a",
+                        {
+                          attrs: { href: "" },
+                          on: {
+                            click: function($event) {
+                              $event.preventDefault()
+                              return _vm.edit_user(user)
+                            }
+                          }
+                        },
+                        [_c("i", { staticClass: "fas fa-edit" })]
+                      ),
+                      _vm._v(
+                        "\n                      |\n                      "
+                      ),
+                      _c(
+                        "a",
+                        {
+                          attrs: { href: "" },
+                          on: {
+                            click: function($event) {
+                              $event.preventDefault()
+                              return _vm.delete_user(user.id)
+                            }
+                          }
+                        },
+                        [_c("i", { staticClass: "fas fa-trash masum" })]
+                      )
+                    ])
                   ])
                 }),
                 0
@@ -59435,7 +59543,7 @@ var render = function() {
           },
           [
             _c("div", { staticClass: "modal-content" }, [
-              _vm._m(3),
+              _vm._m(1),
               _vm._v(" "),
               _c(
                 "form",
@@ -59443,7 +59551,7 @@ var render = function() {
                   on: {
                     submit: function($event) {
                       $event.preventDefault()
-                      return _vm.createUser()
+                      _vm.editmode ? _vm.updateUser() : _vm.createUser()
                     }
                   }
                 },
@@ -59676,7 +59784,25 @@ var render = function() {
                     )
                   ]),
                   _vm._v(" "),
-                  _vm._m(4)
+                  _c("div", { staticClass: "modal-footer" }, [
+                    _c(
+                      "button",
+                      {
+                        staticClass: "btn btn-danger",
+                        attrs: { type: "button", "data-dismiss": "modal" }
+                      },
+                      [_vm._v("Close")]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "button",
+                      {
+                        class: _vm.get_btn_class(),
+                        attrs: { type: "submit", id: "save_button" }
+                      },
+                      [_vm._v(_vm._s(_vm.editmode ? "Update" : "Save"))]
+                    )
+                  ])
                 ]
               )
             ])
@@ -59687,29 +59813,6 @@ var render = function() {
   ])
 }
 var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "card-header" }, [
-      _c("h3", { staticClass: "card-title" }, [_vm._v("All Users")]),
-      _vm._v(" "),
-      _c("div", { staticClass: "card-tools" }, [
-        _c(
-          "button",
-          {
-            staticClass: "btn btn-success",
-            attrs: {
-              type: "button",
-              "data-toggle": "modal",
-              "data-target": "#addNewUser"
-            }
-          },
-          [_vm._v("Add New "), _c("i", { staticClass: "fas fa-user-plus" })]
-        )
-      ])
-    ])
-  },
   function() {
     var _vm = this
     var _h = _vm.$createElement
@@ -59734,26 +59837,10 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("td", [
-      _c("a", { attrs: { href: "" } }, [
-        _c("i", { staticClass: "fas fa-edit" })
-      ]),
-      _vm._v("\n                      |\n                      "),
-      _c("a", { attrs: { href: "" } }, [
-        _c("i", { staticClass: "fas fa-trash masum" })
-      ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
     return _c("div", { staticClass: "modal-header" }, [
-      _c(
-        "h5",
-        { staticClass: "modal-title", attrs: { id: "exampleModalLabel" } },
-        [_vm._v("Add User")]
-      ),
+      _c("h5", { staticClass: "modal-title", attrs: { id: "title" } }, [
+        _vm._v("Add User")
+      ]),
       _vm._v(" "),
       _c(
         "button",
@@ -59766,27 +59853,6 @@ var staticRenderFns = [
           }
         },
         [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
-      )
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "modal-footer" }, [
-      _c(
-        "button",
-        {
-          staticClass: "btn btn-danger",
-          attrs: { type: "button", "data-dismiss": "modal" }
-        },
-        [_vm._v("Close")]
-      ),
-      _vm._v(" "),
-      _c(
-        "button",
-        { staticClass: "btn btn-primary", attrs: { type: "submit" } },
-        [_vm._v("Save")]
       )
     ])
   }
@@ -74922,7 +74988,8 @@ __webpack_require__.r(__webpack_exports__);
  */
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
-window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.js"); // sweet alert
+window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.js");
+window.Fire = new Vue(); // sweet alert
 
  // const Swal = require('sweetalert2')
 
@@ -75361,8 +75428,8 @@ var routes = [{
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! C:\xampp\htdocs\laravel_and_vuejs\big_project\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! C:\xampp\htdocs\laravel_and_vuejs\big_project\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! C:\xampp\htdocs\laravel_and_vuejs\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! C:\xampp\htdocs\laravel_and_vuejs\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

@@ -10,7 +10,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
 
-  <title>AdminLTE 3 | Starter</title>
+  <title>{{config('app.name')}}</title>
 <link rel="stylesheet" href="{{asset('css/app.css')}}">
 <style>
   
@@ -75,8 +75,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
                <li class="nav-item">
                 {{-- <a href="#" class="nav-link"> --}}
                   <router-link class="nav-link" to="/dashboard">
-                  <i class="nav-icon fas fa-th raju"></i>
-                  <p class="raka">
+                  <i class="nav-icon fas fa-th masum"></i>
+                  <p class="body-bg">
                     Dashboard
                   </p>
                 {{-- </a> --}}
@@ -86,7 +86,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
           <li class="nav-item has-treeview">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-tachometer-alt iqbal"></i>
-              <p class="raka">
+              <p class="body-bg">
                Management
                 <i class="right fas fa-angle-left"></i>
               </p>
@@ -104,7 +104,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             {{-- <a href="#" class="nav-link"> --}}
               <router-link class="nav-link" to="/profile">
               <i class="nav-icon fas fa-user raka"></i>
-              <p class="raka">
+              <p class="body-bg">
                 Profile
               </p>
             {{-- </a> --}}
@@ -115,7 +115,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             onclick="event.preventDefault();
                           document.getElementById('logout-form').submit();" class="nav-link">
               <i class="nav-icon fas fa-power-off azam"></i>
-              <p class="raka">
+              <p class="body-bg">
                 Logout
               </p>
               <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">

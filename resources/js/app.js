@@ -8,6 +8,8 @@ require('./bootstrap');
 
 window.Vue = require('vue');
 
+window.Fire = new Vue();
+
 // sweet alert
 import Swal from 'sweetalert2'
 // const Swal = require('sweetalert2')

@@ -64,7 +64,14 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $user = User::findOrFail($id);
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->bio = $request->bio;
+        $user->type = $request->type;
+        $user->password = bcrypt($request->password);
+        $user->update();
+        return 'ok';
     }
 
     /**
@@ -75,6 +82,9 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $user = User::findOrFail($id);
+        $name = $user->name;
+        $user->delete();
+        return response()->json(['message'=>"User $name deleted successfully"]);
     }
 }

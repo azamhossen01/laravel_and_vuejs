@@ -7,7 +7,7 @@
                 <h3 class="card-title">All Users</h3>
 
                 <div class="card-tools">
-                  <button class="btn btn-success" type="button"  data-toggle="modal" data-target="#addNewUser">Add New <i class="fas fa-user-plus"></i></button>
+                  <button class="btn btn-success" type="button" @click="addNew">Add New <i class="fas fa-user-plus"></i></button>
                 </div>
               </div>
               <!-- /.card-header -->
@@ -31,9 +31,9 @@
                       <td>{{user.type | capitalize}}</td>
                       <td>{{user.created_at | my_date}}</td>
                       <td>
-                          <a href=""><i class="fas fa-edit"></i></a>
+                          <a href="" @click.prevent="edit_user(user)"><i class="fas fa-edit"></i></a>
                           |
-                          <a href=""><i class="fas fa-trash masum"></i></a>
+                          <a href="" @click.prevent="delete_user(user.id)"><i class="fas fa-trash masum"></i></a>
                       </td>
                     </tr>
                   </tbody>
@@ -51,12 +51,12 @@
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Add User</h5>
+                        <h5 class="modal-title" id="title">Add User</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <form @submit.prevent="createUser()">
+                    <form @submit.prevent="editmode ? updateUser() : createUser()">
                     <div class="modal-body">
                         <div class="form-group">
                         <input v-model="form.name" placeholder="Name" type="text" name="name"
@@ -89,7 +89,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Save</button>
+                        <button type="submit" v-bind:class="get_btn_class()" id="save_button">{{editmode?'Update':'Save'}}</button>
                     </div>
                     </form>
                     </div>
@@ -102,8 +102,12 @@
     export default {
         data(){
           return {
+            editmode : true,
             users : {},
+            warning : 'btn btn-warning',
+            info : 'btn btn-info',
             form : new Form({
+              id : '',
               name : '',
               email : '',
               bio : '',
@@ -114,6 +118,9 @@
           }
         },
         methods : {
+          get_btn_class(){
+           return  this.editmode ? this.warning : this.info;
+          },
           getUsers(){
             axios.get('api/user')
             .then(res => {
@@ -121,24 +128,91 @@
               this.users = res.data.data;
             });
           },
+          addNew(){
+            this.form.reset();
+            this.editmode = false;
+            $('#title').text('Add User');
+            $('#addNewUser').modal('show');
+          },
           createUser(){
+            
+            
             this.$Progress.start()
             this.form.post('api/user')
             .then(res => {
               this.form.reset();
               this.$Progress.finish()
-              this.getUsers();
+              // this.getUsers();
+              Fire.$emit('AfterCreated');
               Toast.fire({
                 icon: 'success',
                 title: 'User created successfully'
               })
               $('#addNewUser').modal('hide');
+            })
+            .catch((err)=>{
+              console.log(err);
             });
+          },
+          updateUser(){
+            this.$Progress.start()
+            this.form.put('api/user/'+this.form.id)
+            .then(()=>{
+              Fire.$emit('AfterCreated');
+              Toast.fire({
+                icon: 'success',
+                title: 'User updated successfully'
+              })
+              $('#addNewUser').modal('hide');
+            });
+          },
+          delete_user(user_id){
+            Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+          }).then((result) => {
+            
+            if (result.value) {
+              axios.delete('api/user/'+user_id)
+            .then((res)=>{
+              console.log(res.data.message);
+              // this.getUsers();
+              Fire.$emit('AfterCreated');
+              Swal.fire(
+                'Deleted!',
+                res.data.message,
+                'success'
+              )
+            });
+              
+            }
+          })
+            
+          },
+          edit_user(user){
+            // alert(user_id);
+            this.form.reset();
+            this.editmode = true;
+            $('#title').text('Edit User');
+            this.form.fill(user);
+            $('#addNewUser').modal('show');
+            
           }
+
         },
         mounted() {
           this.getUsers();
             console.log('Component mounted.')
+        },
+        created(){
+          Fire.$on('AfterCreated',()=>{
+            this.getUsers();
+          });
         }
     }
 </script>
