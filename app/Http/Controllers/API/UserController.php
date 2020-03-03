@@ -13,6 +13,10 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    public function __construct(){
+        $this->middleware('auth:api');
+    }
+
     public function index()
     {
         $users = User::latest()->paginate(10);
@@ -64,14 +68,25 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
+        
         $user = User::findOrFail($id);
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->bio = $request->bio;
-        $user->type = $request->type;
-        $user->password = bcrypt($request->password);
-        $user->update();
-        return 'ok';
+
+        $this->validate($request,[
+            'name' => 'required|string',
+            'email' => 'required|string|email|unique:users,email,'.$user->id,
+            'password' => 'sometimes|required|min:6',
+            'type' => 'required'
+        ]);
+
+        $user->update($request->all());
+        // $user->name = $request->name;
+        // $user->email = $request->email;
+        // $user->bio = $request->bio;
+        // $user->type = $request->type;
+        // $user->password = bcrypt($request->password);
+        // $user->update();
+        // return 'ok';
+        return response()->json(['message'=>'User updated successfully']);
     }
 
     /**

@@ -157,12 +157,13 @@
           updateUser(){
             this.$Progress.start()
             this.form.put('api/user/'+this.form.id)
-            .then(()=>{
+            .then((res)=>{
               Fire.$emit('AfterCreated');
               Toast.fire({
                 icon: 'success',
-                title: 'User updated successfully'
+                title: res.data.message
               })
+              this.$Progress.finish()
               $('#addNewUser').modal('hide');
             });
           },

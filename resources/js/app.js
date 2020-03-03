@@ -10,6 +10,25 @@ window.Vue = require('vue');
 
 window.Fire = new Vue();
 
+
+// passport component start here
+Vue.component(
+  'passport-clients',
+  require('./components/passport/Clients.vue').default
+);
+
+Vue.component(
+  'passport-authorized-clients',
+  require('./components/passport/AuthorizedClients.vue').default
+);
+
+Vue.component(
+  'passport-personal-access-tokens',
+  require('./components/passport/PersonalAccessTokens.vue').default
+);
+// passport component end here
+
+
 // sweet alert
 import Swal from 'sweetalert2'
 // const Swal = require('sweetalert2')

@@ -101,13 +101,19 @@ scratch. This page gets rid of all links and provides the needed markup only.
             </ul>
           </li>
           <li class="nav-item">
-            {{-- <a href="#" class="nav-link"> --}}
+              <router-link class="nav-link" to="/developer">
+              <i class="nav-icon fas fa-cogs masum"></i>
+              <p class="body-bg">
+                Developer
+              </p>
+            </router-link>
+          </li>
+          <li class="nav-item">
               <router-link class="nav-link" to="/profile">
               <i class="nav-icon fas fa-user raka"></i>
               <p class="body-bg">
                 Profile
               </p>
-            {{-- </a> --}}
             </router-link>
           </li>
           <li class="nav-item">
